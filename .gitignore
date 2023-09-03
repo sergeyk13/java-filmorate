@@ -1,5 +1,6 @@
 *.class
 *.log
+*.iws
 *.jar
 *.war
 *.nar
