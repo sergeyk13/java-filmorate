@@ -1,6 +1,9 @@
 *.class
 *.log
-*.md
+HELP.md
+mvnw.cmd
+mvnw
+pom.xml
 *.jar
 *.war
 *.nar
