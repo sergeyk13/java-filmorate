@@ -5,6 +5,7 @@ import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
+
 @Slf4j
 public class UserCheaker {
     public static Boolean cheakUser(User user) throws ValidationException {

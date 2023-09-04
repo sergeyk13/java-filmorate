@@ -14,7 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    private InMemoryFilmManager manager = new InMemoryFilmManager();
+    private final InMemoryFilmManager manager = new InMemoryFilmManager();
 
     @GetMapping
     public ResponseEntity<List<Film>> getFilms() {
