@@ -23,14 +23,13 @@ public class FilmController {
                 .body(manager.getFilms());
     }
 
-
     @PostMapping
     public ResponseEntity<Film> addFilm(@RequestBody @Valid Film film) {
         return manager.addFilm(film);
     }
 
     @PutMapping
-    public ResponseEntity<Film> updateFilm(@RequestBody Film film) {
+    public ResponseEntity<Film> updateFilm(@RequestBody @Valid Film film) {
         return manager.updateFilm(film);
     }
 }
