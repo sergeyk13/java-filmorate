@@ -30,12 +30,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 public class UserControllerTest {
     private User testUser;
-    private int id =1;
+    private int id = 1;
     private String email = "test@example.com";
     private String login = "testlogin";
     private String name = "Test User";
     private LocalDate birthday = LocalDate.of(2001, 1, 1);
-    ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
+    private ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
     @InjectMocks
     private UserController userController;
@@ -75,7 +75,7 @@ public class UserControllerTest {
 
     @Test
     void shouldBeCreateNewUserWithoutName() throws Exception {
-        User testUser2 = new User(id,email,login,"",birthday);
+        User testUser2 = new User(id, email, login, "", birthday);
         String json = objectMapper.writeValueAsString(testUser2);
         testUser2.setName(login);
         String checkedJson = objectMapper.writeValueAsString(testUser2);
@@ -89,7 +89,7 @@ public class UserControllerTest {
 
     @Test
     void shouldNotBeCreateNewUserWithoutRightEmail() throws Exception {
-        User testUser2 = new User(id,"email",login,"",birthday);
+        User testUser2 = new User(id, "email", login, "", birthday);
         String json = objectMapper.writeValueAsString(testUser2);
 
 
@@ -104,7 +104,7 @@ public class UserControllerTest {
 
     @Test
     void shouldNotBeCreateNewUserWithBlankEmail() throws Exception {
-        User testUser2 = new User(id,"   ",login,"",birthday);
+        User testUser2 = new User(id, "   ", login, "", birthday);
         String json = objectMapper.writeValueAsString(testUser2);
 
 
@@ -119,7 +119,7 @@ public class UserControllerTest {
 
     @Test
     void shouldNotBeCreateNewUserWithBlankLogin() throws Exception {
-        User testUser2 = new User(id,email,"  ","",birthday);
+        User testUser2 = new User(id, email, "  ", "", birthday);
         String json = objectMapper.writeValueAsString(testUser2);
 
 
@@ -134,7 +134,7 @@ public class UserControllerTest {
 
     @Test
     void shouldNotBeCreateNewUserWithFutureBirthday() throws Exception {
-        User testUser2 = new User(id,email,login,"",LocalDate.of(2025,1,1));
+        User testUser2 = new User(id, email, login, "", LocalDate.of(2025, 1, 1));
         String json = objectMapper.writeValueAsString(testUser2);
 
 
@@ -151,12 +151,12 @@ public class UserControllerTest {
     @Test
     void shouldBeUpdateUser() throws Exception {
         String json = objectMapper.writeValueAsString(testUser);
-        User testUser2 = new User(id,email,"newLogin",name,birthday);
+        User testUser2 = new User(id, email, "newLogin", name, birthday);
         String json2 = objectMapper.writeValueAsString(testUser2);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json));
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json));
 
         mockMvc.perform(MockMvcRequestBuilders.put("/users")
                         .contentType(MediaType.APPLICATION_JSON)

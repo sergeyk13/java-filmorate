@@ -1,28 +1,22 @@
 package ru.yandex.practicum.filmorate.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.doReturn;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -34,33 +28,35 @@ class FilmControllerTest {
     private int id = 1;
     private String name = "testName";
     private String description = "test description";
-    private LocalDate releaseDate = LocalDate.of(1991,1,1);
-    private  int duration = 90;
-    ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
+    private LocalDate releaseDate = LocalDate.of(1991, 1, 1);
+    private int duration = 90;
+    private ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
-    @InjectMocks
-    private FilmController controller;
     @Autowired
     private MockMvc mockMvc;
-    @Mock
-    private List<Film> films;
 
     @BeforeEach
-    void setUp(){
-        testFilm = new Film(id,name,description,releaseDate,duration);
+    void setUp() {
+        testFilm = new Film(name,description,releaseDate,duration,id);
     }
 
     @Test
-    void shouldBeGetAllUsersFindAll() {
+    void shouldBeGetAllUsersFindAll() throws Exception {
 
         var userList = List.of(testFilm);
-        doReturn(userList.get(0)).when(films).get(0);
-        var response = controller.getFilms();
+        String json = objectMapper.writeValueAsString(userList);
+        String json1 = objectMapper.writeValueAsString(testFilm);
 
-        Assertions.assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
-        assertEquals(userList.get(0), response.getBody().get(0));
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/films")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json1));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/films")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk())
+                .andExpect(content().json(json));
     }
 
     @Test
@@ -77,7 +73,7 @@ class FilmControllerTest {
 
     @Test
     void shouldBeNotCreateNewFilmWithoutName() throws Exception {
-        Film testFilm2 = new Film(id,"",description,releaseDate,duration);
+        Film testFilm2 = new Film("",description,releaseDate,duration,id);
         String json = objectMapper.writeValueAsString(testFilm2);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/films")
@@ -92,7 +88,7 @@ class FilmControllerTest {
     @Test
     void shouldBeNotCreateNewFilmWithLongDuration() throws Exception {
         String longDescription = new String(new char[201]).replace('\0', 'A');
-        Film testFilm2 = new Film(id,name,longDescription,releaseDate,duration);
+        Film testFilm2 = new Film(name,longDescription,releaseDate,duration,id);
         String json = objectMapper.writeValueAsString(testFilm2);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/films")
@@ -106,7 +102,7 @@ class FilmControllerTest {
 
     @Test
     void shouldBeNotCreateNewFilmWithWrongTime() throws Exception {
-        Film testFilm2 = new Film(id,name,description,LocalDate.of(1200,1,1),duration);
+        Film testFilm2 = new Film(name,description,LocalDate.of(1,1,1),duration,id);
         String json = objectMapper.writeValueAsString(testFilm2);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/films")
@@ -121,7 +117,7 @@ class FilmControllerTest {
     @Test
     void shouldBeNotCreateNewFilmWithWrongDuration() throws Exception {
         duration = -1;
-        Film testFilm2 = new Film(id,name,description,releaseDate,duration);
+        Film testFilm2 = new Film(name,description,releaseDate,duration,id);
         String json = objectMapper.writeValueAsString(testFilm2);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/films")
@@ -136,9 +132,8 @@ class FilmControllerTest {
     @Test
     void shouldBeUpdateFilmWith() throws Exception {
         String json = objectMapper.writeValueAsString(testFilm);
-        Film testFilm2 = new Film(id,"newName",description,releaseDate,duration);
+        Film testFilm2 = new Film("newName",description,releaseDate,duration,id);
         String json2 = objectMapper.writeValueAsString(testFilm2);
-
 
 
         mockMvc.perform(MockMvcRequestBuilders.post("/films")

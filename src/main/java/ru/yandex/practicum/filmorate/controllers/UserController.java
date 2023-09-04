@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserCheaker;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,37 +28,10 @@ public class UserController {
                 .body(users);
     }
 
-    private Boolean cheakUser(User user) throws ValidationException {
-        String email = user.getEmail();
-        String login = user.getLogin();
-        String name = user.getName();
-        LocalDate birthday = user.getBirthday();
-        if (!email.contains("@")) {
-            log.error("email error");
-            throw new ValidationException("электронная почта не может быть пустой и должна содержать символ @");
-        }
-        if (login.isBlank()) {
-            log.error("login error: login is blank");
-            throw new ValidationException("login не может быть пустым");
-        }
-        if (name == null) {
-            user.setName(login);
-            log.info("Set name user:" + user.getName());
-        } else if (name.isBlank()) {
-            user.setName(login);
-            log.info("Set name user:" + user.getName());
-        }
-        if (!birthday.isBefore(LocalDate.now())) {
-            log.error("birthday error");
-            throw new ValidationException("дата рождения не может быть в будущем.");
-        }
-        return true;
-    }
-
     @PostMapping()
     public ResponseEntity<User> create(@RequestBody User user) {
         try {
-            cheakUser(user);
+            UserCheaker.cheakUser(user);
             for (User u : users) {
                 if (u.getEmail().equals(user.getEmail())) {
                     log.error("user's email exist");
@@ -83,7 +56,7 @@ public class UserController {
     public ResponseEntity<User> updateUser(@RequestBody User user) {
         try {
             boolean isExist = false;
-            cheakUser(user);
+            UserCheaker.cheakUser(user);
 
             List<User> updatedUsers = new ArrayList<>();
 
@@ -111,5 +84,4 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
-
 }
