@@ -37,7 +37,6 @@ public class UserService {
             user.setId(++id);
             users.add(user);
             log.info("User add: " + user.getEmail());
-
             return user;
         } catch (ValidationException e) {
             log.error("Error adding user: " + e.getMessage());
