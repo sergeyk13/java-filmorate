@@ -1,35 +1,29 @@
 package ru.yandex.practicum.filmorate.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.doReturn;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(UserController.class)
-@AutoConfigureMockMvc
-@ExtendWith(MockitoExtension.class)
 public class UserControllerTest {
-    private User testUser;
     private int id = 1;
     private String email = "test@example.com";
     private String login = "testlogin";
@@ -37,36 +31,44 @@ public class UserControllerTest {
     private LocalDate birthday = LocalDate.of(2001, 1, 1);
     private ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
-    @InjectMocks
-    private UserController userController;
+    private User testUser = new User(id, email, login, name, birthday);
+
     @Autowired
     private MockMvc mockMvc;
-    @Mock
-    private List<User> users;
 
-    @BeforeEach
-    void setUp() {
-        testUser = new User(1, "test@example.com", "testlogin", "Test User", LocalDate.of(2001, 1, 1));
+    @MockBean
+    private UserService userService;
+
+    @Test
+    void shouldBeGetAllUsersFindAll() throws Exception {
+
+        var userList = List.of(testUser);
+        when(this.userService.getUsers()).thenReturn(userList);
+
+        mockMvc.perform(get("/users"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1));
     }
 
     @Test
-    void shouldBeGetAllUsersFindAll() {
+    void findOneShouldReturnValidFilm() throws Exception {
+        var list = List.of(testUser);
+        when(this.userService.findOne(1)).thenReturn(list.get(0));
 
-        var userList = List.of(testUser);
-        doReturn(userList.get(0)).when(users).get(0);
-        var response = userController.findAll();
-
-        Assertions.assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
-        assertEquals(userList.get(0), response.getBody().get(0));
+        mockMvc.perform(get("/users/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value(name))
+                .andExpect(jsonPath("$.login").value(login))
+                .andExpect(jsonPath("$.email").value(email));
     }
 
     @Test
     void shouldBeCreateNewUser() throws Exception {
         String json = objectMapper.writeValueAsString(testUser);
+        when(userService.create(any(User.class))).thenReturn(testUser);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/users")
+        mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
@@ -79,6 +81,7 @@ public class UserControllerTest {
         String json = objectMapper.writeValueAsString(testUser2);
         testUser2.setName(login);
         String checkedJson = objectMapper.writeValueAsString(testUser2);
+        when(userService.create(any(User.class))).thenReturn(testUser2);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -92,14 +95,10 @@ public class UserControllerTest {
         User testUser2 = new User(id, "email", login, "", birthday);
         String json = objectMapper.writeValueAsString(testUser2);
 
-
         mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
-                .andExpect(status().isInternalServerError())
-                .andExpect(mvcResult -> assertEquals("500 INTERNAL_SERVER_ERROR " +
-                                "\"электронная почта не может быть пустой и должна содержать символ @\"",
-                        mvcResult.getResolvedException().getMessage()));
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -111,10 +110,7 @@ public class UserControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
-                .andExpect(status().isInternalServerError())
-                .andExpect(mvcResult -> assertEquals("500 INTERNAL_SERVER_ERROR " +
-                                "\"электронная почта не может быть пустой и должна содержать символ @\"",
-                        mvcResult.getResolvedException().getMessage()));
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -126,10 +122,7 @@ public class UserControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
-                .andExpect(status().isInternalServerError())
-                .andExpect(mvcResult -> assertEquals("500 INTERNAL_SERVER_ERROR " +
-                                "\"login не может быть пустым\"",
-                        mvcResult.getResolvedException().getMessage()));
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -141,18 +134,16 @@ public class UserControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
-                .andExpect(status().isInternalServerError())
-                .andExpect(mvcResult -> assertEquals("500 INTERNAL_SERVER_ERROR " +
-                                "\"дата рождения не может быть в будущем.\"",
-                        mvcResult.getResolvedException().getMessage()));
+                .andExpect(status().isBadRequest());
     }
 
 
     @Test
     void shouldBeUpdateUser() throws Exception {
         String json = objectMapper.writeValueAsString(testUser);
-        User testUser2 = new User(id, email, "newLogin", name, birthday);
+        User testUser2 = new User(id, email, login, "newName", birthday);
         String json2 = objectMapper.writeValueAsString(testUser2);
+        when(userService.updateUser(any(User.class))).thenReturn(testUser2);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -167,14 +158,14 @@ public class UserControllerTest {
 
     @Test
     void shouldNotBeUpdateUserNonExistentUser() throws Exception {
+        when(userService.updateUser(any(User.class))).thenThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                "Фильм " + testUser.getLogin() + " не существует"));
+
         String json = objectMapper.writeValueAsString(testUser);
 
         mockMvc.perform(MockMvcRequestBuilders.put("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
-                .andExpect(status().isInternalServerError())
-                .andExpect(mvcResult -> assertEquals("500 INTERNAL_SERVER_ERROR " +
-                                "\"Пользователь не существует\"",
-                        mvcResult.getResolvedException().getMessage()));
+                .andExpect(status().isBadRequest());
     }
 }

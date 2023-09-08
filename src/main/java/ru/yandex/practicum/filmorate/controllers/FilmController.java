@@ -1,35 +1,43 @@
 package ru.yandex.practicum.filmorate.controllers;
 
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exeption.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Slf4j
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    private final FilmService manager = new FilmService();
+    private final FilmService filmService;
+
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
+    }
 
     @GetMapping
-    public ResponseEntity<List<Film>> getFilms() {
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(manager.getFilms());
+    public List<Film> getFilms() {
+        return filmService.getFilms();
     }
 
     @PostMapping
-    public ResponseEntity<Film> addFilm(@RequestBody @Valid Film film) {
-        return manager.addFilm(film);
+    public Film addFilm(@RequestBody @Valid Film film) {
+        filmService.addFilm(film);
+        return film;
     }
 
     @PutMapping
-    public ResponseEntity<Film> updateFilm(@RequestBody @Valid Film film) {
-        return manager.updateFilm(film);
+    public Film updateFilm(@RequestBody @Valid Film film) {
+        filmService.updateFilm(film);
+        return film;
+    }
+
+    @GetMapping("/{id}")
+    public Film findOne(@PathVariable int id) throws NotFoundException {
+        return filmService.findOne(id);
     }
 }

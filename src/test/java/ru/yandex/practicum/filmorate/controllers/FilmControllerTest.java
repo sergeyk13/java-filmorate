@@ -1,30 +1,30 @@
 package ru.yandex.practicum.filmorate.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(FilmController.class)
-@AutoConfigureMockMvc
-@ExtendWith(MockitoExtension.class)
 class FilmControllerTest {
-    Film testFilm;
+
     private int id = 1;
     private String name = "testName";
     private String description = "test description";
@@ -32,39 +32,29 @@ class FilmControllerTest {
     private int duration = 90;
     private ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
+    Film testFilm = new Film(name, description, releaseDate, duration, id);
+
     @Autowired
     private MockMvc mockMvc;
-
-    @BeforeEach
-    void setUp() {
-        testFilm = new Film(name,description,releaseDate,duration,id);
-    }
+    @MockBean
+    private FilmService filmService;
 
     @Test
-    void shouldBeGetAllUsersFindAll() throws Exception {
+    void shouldBeGetAllFilmFindAll() throws Exception {
 
-        var userList = List.of(testFilm);
-        String json = objectMapper.writeValueAsString(userList);
-        String json1 = objectMapper.writeValueAsString(testFilm);
+        var filmList = List.of(testFilm);
+        when(this.filmService.getFilms()).thenReturn(filmList);
 
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/films")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json1));
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/films")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
+        mockMvc.perform(get("/films"))
                 .andExpect(status().isOk())
-                .andExpect(content().json(json));
+                .andExpect(jsonPath("$.length()").value(1));
     }
 
     @Test
     void shouldBeAddNewFilm() throws Exception {
         String json = objectMapper.writeValueAsString(testFilm);
 
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/films")
+        mockMvc.perform(post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
@@ -72,69 +62,69 @@ class FilmControllerTest {
     }
 
     @Test
+    void findOneShouldReturnValidFilm() throws Exception {
+        var filmList = List.of(testFilm);
+        when(this.filmService.findOne(1)).thenReturn(filmList.get(0));
+
+        mockMvc.perform(get("/films/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value(name))
+                .andExpect(jsonPath("$.description").value(description))
+                .andExpect(jsonPath("$.duration").value(duration));
+    }
+
+    @Test
     void shouldBeNotCreateNewFilmWithoutName() throws Exception {
-        Film testFilm2 = new Film("",description,releaseDate,duration,id);
+        Film testFilm2 = new Film("", description, releaseDate, duration, id);
         String json = objectMapper.writeValueAsString(testFilm2);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
-                .andExpect(status().isInternalServerError())
-                .andExpect(mvcResult -> assertEquals("500 INTERNAL_SERVER_ERROR " +
-                                "\"Название фильма не может быть пустым\"",
-                        mvcResult.getResolvedException().getMessage()));
+                .andExpect(status().isBadRequest());
     }
 
     @Test
     void shouldBeNotCreateNewFilmWithLongDuration() throws Exception {
         String longDescription = new String(new char[201]).replace('\0', 'A');
-        Film testFilm2 = new Film(name,longDescription,releaseDate,duration,id);
+        Film testFilm2 = new Film(name, longDescription, releaseDate, duration, id);
         String json = objectMapper.writeValueAsString(testFilm2);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
-                .andExpect(status().isInternalServerError())
-                .andExpect(mvcResult -> assertEquals("500 INTERNAL_SERVER_ERROR " +
-                                "\"Длина описания превышает 200 символов\"",
-                        mvcResult.getResolvedException().getMessage()));
+                .andExpect(status().isBadRequest());
     }
 
     @Test
     void shouldBeNotCreateNewFilmWithWrongTime() throws Exception {
-        Film testFilm2 = new Film(name,description,LocalDate.of(1,1,1),duration,id);
+        Film testFilm2 = new Film(name, description, LocalDate.of(1, 1, 1), duration, id);
         String json = objectMapper.writeValueAsString(testFilm2);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
-                .andExpect(status().isInternalServerError())
-                .andExpect(mvcResult -> assertEquals("500 INTERNAL_SERVER_ERROR " +
-                                "\"дата релиза должна быть — не раньше 28 декабря 1895 года\"",
-                        mvcResult.getResolvedException().getMessage()));
+                .andExpect(status().isBadRequest());
     }
 
     @Test
     void shouldBeNotCreateNewFilmWithWrongDuration() throws Exception {
         duration = -1;
-        Film testFilm2 = new Film(name,description,releaseDate,duration,id);
+        Film testFilm2 = new Film(name, description, releaseDate, duration, id);
         String json = objectMapper.writeValueAsString(testFilm2);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
-                .andExpect(status().isInternalServerError())
-                .andExpect(mvcResult -> assertEquals("500 INTERNAL_SERVER_ERROR " +
-                                "\"Продолжительность фильма должна быть положительной.\"",
-                        mvcResult.getResolvedException().getMessage()));
+                .andExpect(status().isBadRequest());
     }
 
     @Test
     void shouldBeUpdateFilmWith() throws Exception {
         String json = objectMapper.writeValueAsString(testFilm);
-        Film testFilm2 = new Film("newName",description,releaseDate,duration,id);
+        Film testFilm2 = new Film("newName", description, releaseDate, duration, id);
         String json2 = objectMapper.writeValueAsString(testFilm2);
-
 
         mockMvc.perform(MockMvcRequestBuilders.post("/films")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -149,15 +139,14 @@ class FilmControllerTest {
 
     @Test
     void shouldBeNotBeUpdateNotExistFilm() throws Exception {
+        when(filmService.updateFilm(any(Film.class))).thenThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                "Фильм " + testFilm.getName() + " не существует"));
+
         String json = objectMapper.writeValueAsString(testFilm);
 
         mockMvc.perform(MockMvcRequestBuilders.put("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
-                .andExpect(status().isInternalServerError())
-                .andExpect(mvcResult -> assertEquals("500 INTERNAL_SERVER_ERROR " +
-                                "\"Фильм " + testFilm.getName() + " не существует\"",
-                        mvcResult.getResolvedException().getMessage()));
+                .andExpect(status().isBadRequest());
     }
-
 }
