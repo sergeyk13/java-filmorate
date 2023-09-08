@@ -31,8 +31,12 @@ public class UserService {
                     throw new ValidationException("Пользователь с таким email уже существует!");
                 }
             }
-            if (user.getName().isBlank()){
+            if (user.getName() == null) {
                 user.setName(user.getLogin());
+                log.info("Set name user:" + user.getName());
+            } else if (user.getName().isBlank()) {
+                user.setName(user.getLogin());
+                log.info("Set name user:" + user.getName());
             }
             user.setId(++id);
             users.add(user);

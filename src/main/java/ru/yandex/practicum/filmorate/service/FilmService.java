@@ -56,7 +56,7 @@ public class FilmService {
         }
         if (!isExist) {
             log.error("Error updating film: " + film.getName() + " isn't exist");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Фильм " + film.getName() +
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Фильм " + film.getName() +
                     " не существует");
         }
         log.info("Film update: " + film.getName());
