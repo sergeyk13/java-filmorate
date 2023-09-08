@@ -6,7 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.InMemoryFilmManager;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    private final InMemoryFilmManager manager = new InMemoryFilmManager();
+    private final FilmService manager = new FilmService();
 
     @GetMapping
     public ResponseEntity<List<Film>> getFilms() {

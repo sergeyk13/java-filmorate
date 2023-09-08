@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -12,9 +13,10 @@ import ru.yandex.practicum.filmorate.model.Film;
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 @Getter
 @Slf4j
-public class InMemoryFilmManager {
+public class FilmService {
     private int id = 0;
     private List<Film> films = new ArrayList<>();
 
@@ -35,7 +37,7 @@ public class InMemoryFilmManager {
                     .body(film);
         } catch (ValidationException e) {
             log.error("Error adding film: " + e.getMessage());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
