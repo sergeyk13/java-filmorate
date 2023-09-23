@@ -1,66 +1,45 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import jdk.dynalink.linker.LinkerServices;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-import ru.yandex.practicum.filmorate.exeption.NotFoundException;
-import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 
-import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
-@Getter
-@Slf4j
 public class FilmService {
-    private int id = 0;
-    private List<Film> films = new ArrayList<>();
-
-    public Film findOne(int id) throws NotFoundException {
-        return films.stream().filter(film -> film.getId() == id).findFirst().orElseThrow(NotFoundException::new);
+    private final InMemoryFilmStorage inMemoryFilmStorage;
+    public FilmService (InMemoryFilmStorage inMemoryFilmStorage){
+        this.inMemoryFilmStorage = inMemoryFilmStorage;
+    }
+    public void addLike(Film film, User user) {
+        film.addLike(user.getId());
     }
 
-    public Film addFilm(Film film) {
-        try {
-            for (Film f : films) {
-                if (f.equals(film)) {
-                    log.error("Duplicate error");
-                    throw new ValidationException("Фильм уже добавлен в библиотеку фильмов");
-                }
-            }
-            film.setId(++id);
-            films.add(film);
-            log.info("Film added: " + film.getName());
+    public void removeLike(Film film, User user){
+        Set<Integer> likes = film.getLikes();
+        likes.remove(user.getId());
+        film.setLikes(likes);
+    }
+    public List<Film> viewTenPopular() {
+        List<Film> filmList = inMemoryFilmStorage.getFilms();
 
-            return film;
-        } catch (ValidationException e) {
-            log.error("Error adding film: " + e.getMessage());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+        // Сначала отсортируйте список фильмов в убывающем порядке по количеству лайков
+        List<Film> sortedFilms = filmList.stream()
+                .sorted(Comparator.comparingInt(film -> film.getLikes().size()))
+                .collect(Collectors.toList());
+
+        // Затем возьмите последние 10 фильмов
+        List<Film> topTen = sortedFilms.stream()
+                .skip(Math.max(0, sortedFilms.size() - 10))
+                .collect(Collectors.toList());
+        return topTen;
     }
 
-    public Film updateFilm(Film film) {
-        boolean isExist = false;
-        List<Film> updatedFilms = new ArrayList<>();
-
-        for (Film existingFilm : films) {
-            if (existingFilm.getId() == film.getId()) {
-                updatedFilms.add(film);
-                isExist = true;
-            } else {
-                updatedFilms.add(existingFilm);
-            }
-        }
-        if (!isExist) {
-            log.error("Error updating film: " + film.getName() + " isn't exist");
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Фильм " + film.getName() +
-                    " не существует");
-        }
-        log.info("Film update: " + film.getName());
-        films = updatedFilms;
-        return film;
-    }
 }

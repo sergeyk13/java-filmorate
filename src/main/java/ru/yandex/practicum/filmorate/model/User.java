@@ -9,6 +9,8 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -24,6 +26,13 @@ public class User {
     private final LocalDate birthday;
     private int id;
     private String name;
+    private Set<Integer> friendsId = new HashSet<>();
 
+    public void setFriendsId(Set<Integer> friendsId) {
+        this.friendsId = friendsId;
+    }
 
+    public void setFriendsId(int friendsId) {
+        this.friendsId.add(friendsId);
+    }
 }

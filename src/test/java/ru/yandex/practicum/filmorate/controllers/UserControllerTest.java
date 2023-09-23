@@ -11,7 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -37,13 +37,13 @@ public class UserControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private UserService userService;
+    private InMemoryUserStorage inMemoryUserStorage;
 
     @Test
     void shouldBeGetAllUsersFindAll() throws Exception {
 
         var userList = List.of(testUser);
-        when(this.userService.getUsers()).thenReturn(userList);
+        when(this.inMemoryUserStorage.getUsers()).thenReturn(userList);
 
         mockMvc.perform(get("/users"))
                 .andExpect(status().isOk())
@@ -53,7 +53,7 @@ public class UserControllerTest {
     @Test
     void findOneShouldReturnValidFilm() throws Exception {
         var list = List.of(testUser);
-        when(this.userService.findOne(1)).thenReturn(list.get(0));
+        when(this.inMemoryUserStorage.findOne(1)).thenReturn(list.get(0));
 
         mockMvc.perform(get("/users/1"))
                 .andExpect(status().isOk())
@@ -66,7 +66,7 @@ public class UserControllerTest {
     @Test
     void shouldBeCreateNewUser() throws Exception {
         String json = objectMapper.writeValueAsString(testUser);
-        when(userService.create(any(User.class))).thenReturn(testUser);
+        when(inMemoryUserStorage.create(any(User.class))).thenReturn(testUser);
 
         mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -81,7 +81,7 @@ public class UserControllerTest {
         String json = objectMapper.writeValueAsString(testUser2);
         testUser2.setName(login);
         String checkedJson = objectMapper.writeValueAsString(testUser2);
-        when(userService.create(any(User.class))).thenReturn(testUser2);
+        when(inMemoryUserStorage.create(any(User.class))).thenReturn(testUser2);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -143,7 +143,7 @@ public class UserControllerTest {
         String json = objectMapper.writeValueAsString(testUser);
         User testUser2 = new User(email,login,birthday,id,"newName");
         String json2 = objectMapper.writeValueAsString(testUser2);
-        when(userService.updateUser(any(User.class))).thenReturn(testUser2);
+        when(inMemoryUserStorage.updateUser(any(User.class))).thenReturn(testUser2);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -158,7 +158,7 @@ public class UserControllerTest {
 
     @Test
     void shouldNotBeUpdateUserNonExistentUser() throws Exception {
-        when(userService.updateUser(any(User.class))).thenThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST,
+        when(inMemoryUserStorage.updateUser(any(User.class))).thenThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST,
                 "Фильм " + testUser.getLogin() + " не существует"));
 
         String json = objectMapper.writeValueAsString(testUser);

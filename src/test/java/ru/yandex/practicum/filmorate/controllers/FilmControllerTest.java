@@ -11,7 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -37,13 +37,13 @@ class FilmControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @MockBean
-    private FilmService filmService;
+    private InMemoryFilmStorage inMemoryFilmStorage;
 
     @Test
     void shouldBeGetAllFilmFindAll() throws Exception {
 
         var filmList = List.of(testFilm);
-        when(this.filmService.getFilms()).thenReturn(filmList);
+        when(this.inMemoryFilmStorage.getFilms()).thenReturn(filmList);
 
         mockMvc.perform(get("/films"))
                 .andExpect(status().isOk())
@@ -64,7 +64,7 @@ class FilmControllerTest {
     @Test
     void findOneShouldReturnValidFilm() throws Exception {
         var filmList = List.of(testFilm);
-        when(this.filmService.findOne(1)).thenReturn(filmList.get(0));
+        when(this.inMemoryFilmStorage.findOne(1)).thenReturn(filmList.get(0));
 
         mockMvc.perform(get("/films/1"))
                 .andExpect(status().isOk())
@@ -139,7 +139,7 @@ class FilmControllerTest {
 
     @Test
     void shouldBeNotBeUpdateNotExistFilm() throws Exception {
-        when(filmService.updateFilm(any(Film.class))).thenThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST,
+        when(inMemoryFilmStorage.updateFilm(any(Film.class))).thenThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST,
                 "Фильм " + testFilm.getName() + " не существует"));
 
         String json = objectMapper.writeValueAsString(testFilm);

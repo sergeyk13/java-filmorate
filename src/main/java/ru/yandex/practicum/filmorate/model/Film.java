@@ -9,6 +9,8 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -24,4 +26,9 @@ public class Film {
     @Min(1)
     private final int duration;
     private int id;
+    private Set<Integer> likes = new HashSet<>();
+
+    public void addLike(int userId) {
+        this.likes.add(userId);
+    }
 }
