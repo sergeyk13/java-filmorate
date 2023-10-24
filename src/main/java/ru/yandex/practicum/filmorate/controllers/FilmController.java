@@ -44,12 +44,12 @@ public class FilmController {
 
     @PutMapping("{id}/like/{userId}")
     public void setLike(@PathVariable int id, @PathVariable int userId) throws NotFoundException {
-        filmService.addLike(inMemoryFilmStorage.findOne(id),userId);
+        filmService.addLike(inMemoryFilmStorage.findOne(id), userId);
     }
 
     @DeleteMapping("{id}/like/{userId}")
     public void removeLike(@PathVariable int id, @PathVariable int userId) throws NotFoundException {
-       filmService.removeLike(inMemoryFilmStorage.findOne(id), userId);
+        filmService.removeLike(inMemoryFilmStorage.findOne(id), userId);
     }
 
     @GetMapping("/popular")

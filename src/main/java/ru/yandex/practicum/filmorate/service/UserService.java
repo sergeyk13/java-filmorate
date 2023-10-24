@@ -30,7 +30,7 @@ public class UserService {
 
         addFrend(firstUser, secondId);
         addFrend(secondUser, firstId);
-        log.info("user: "+ firstId + " and user: " + secondId +
+        log.info("user: " + firstId + " and user: " + secondId +
                 " start friendship");
     }
 
@@ -60,7 +60,7 @@ public class UserService {
             user.setFriendsId(friends);
             secondFriends.remove(user.getId());
             secondUser.setFriendsId(secondFriends);
-            log.info("user: "+ user.getId() + " and user: " + secondUser.getId() +
+            log.info("user: " + user.getId() + " and user: " + secondUser.getId() +
                     " friendship over");
         }
     }
