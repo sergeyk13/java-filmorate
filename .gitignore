@@ -1,5 +1,6 @@
 *.class
 *.log
+*.iws
 *.jar
 *.war
 *.nar
@@ -7,6 +8,8 @@
 *.zip
 *.tar.gz
 *.rar
+.idea
+HELP.md
 hs_err_pid*
 out/
 target/
