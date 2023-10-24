@@ -75,8 +75,7 @@ public class UserService {
         } else if (commonFriendsSecondUser == null) {
             return commonFriends;
         } else {
-            commonFriendsFirstUser.forEach(id ->
-            {
+            commonFriendsFirstUser.forEach(id -> {
                 if (commonFriendsSecondUser.contains(id)) {
                     commonSet.add(id);
                 }
