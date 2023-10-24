@@ -4,19 +4,19 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exeption.NotFoundException;
 import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 @Component
 @Getter
 @Slf4j
-public class InMemoryFilmStorage implements FilmStorage{
+public class InMemoryFilmStorage implements FilmStorage {
     private int id = 0;
     private List<Film> films = new ArrayList<>();
 
@@ -33,6 +33,7 @@ public class InMemoryFilmStorage implements FilmStorage{
                 }
             }
             film.setId(++id);
+            film.setLikes(new HashSet<>());
             films.add(film);
             log.info("Film added: " + film.getName());
 

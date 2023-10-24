@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exeption.NotFoundException;
 import ru.yandex.practicum.filmorate.exeption.ValidationException;
@@ -12,11 +11,12 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Component
 @Getter
 @Slf4j
-public class InMemoryUserStorage implements UserStorage{
+public class InMemoryUserStorage implements UserStorage {
     private int id = 0;
     private List<User> users = new ArrayList<>();
 
@@ -70,5 +70,9 @@ public class InMemoryUserStorage implements UserStorage{
         log.info("User update: " + user.getEmail());
         users = updatedUsers;
         return user;
+    }
+
+    public Set<Integer> returnFriendsId(int id) throws NotFoundException {
+        return findOne(id).getFriendsId();
     }
 }

@@ -13,7 +13,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
-@AllArgsConstructor
 public class Film {
 
     @NotBlank
@@ -26,7 +25,16 @@ public class Film {
     @Min(1)
     private final int duration;
     private int id;
-    private Set<Integer> likes = new HashSet<>();
+    private Set<Integer> likes;
+
+    public Film(String name, String description, LocalDate releaseDate, int duration, int id, Set<Integer> likes) {
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.id = id;
+        this.likes = new HashSet<>();
+    }
 
     public void addLike(int userId) {
         this.likes.add(userId);

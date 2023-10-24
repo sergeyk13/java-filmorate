@@ -3,13 +3,13 @@ package ru.yandex.practicum.filmorate.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -26,7 +26,8 @@ public class User {
     private final LocalDate birthday;
     private int id;
     private String name;
-    private Set<Integer> friendsId = new HashSet<>();
+    @Getter
+    private Set<Integer> friendsId;
 
     public void setFriendsId(Set<Integer> friendsId) {
         this.friendsId = friendsId;

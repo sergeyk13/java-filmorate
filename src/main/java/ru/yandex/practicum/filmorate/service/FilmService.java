@@ -1,44 +1,55 @@
 package ru.yandex.practicum.filmorate.service;
 
-import jdk.dynalink.linker.LinkerServices;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class FilmService {
     private final InMemoryFilmStorage inMemoryFilmStorage;
-    public FilmService (InMemoryFilmStorage inMemoryFilmStorage){
-        this.inMemoryFilmStorage = inMemoryFilmStorage;
-    }
-    public void addLike(Film film, User user) {
-        film.addLike(user.getId());
+    private final InMemoryUserStorage inMemoryUserStorage;
+
+    public void addLike(Film film, int userId) {
+        if (film.getLikes() == null) {
+            film.setLikes(new HashSet<>());
+        }
+        film.addLike(userId);
+        log.info("Add like from user: " + userId + " to film: " + film.getName());
     }
 
-    public void removeLike(Film film, User user){
+    public void removeLike(Film film, int userId) {
+        inMemoryUserStorage.findOne(userId);
         Set<Integer> likes = film.getLikes();
-        likes.remove(user.getId());
+        likes.remove(userId);
         film.setLikes(likes);
+        log.info("Remove like from user: " + userId + " to film: " + film.getName());
     }
-    public List<Film> viewTenPopular() {
+
+    public List<Film> viewTenPopular(Integer count) {
         List<Film> filmList = inMemoryFilmStorage.getFilms();
 
-        // Сначала отсортируйте список фильмов в убывающем порядке по количеству лайков
+        if (count == null) {
+            count = 10;
+        }
         List<Film> sortedFilms = filmList.stream()
                 .sorted(Comparator.comparingInt(film -> film.getLikes().size()))
                 .collect(Collectors.toList());
 
-        // Затем возьмите последние 10 фильмов
         List<Film> topTen = sortedFilms.stream()
-                .skip(Math.max(0, sortedFilms.size() - 10))
+                .skip(Math.max(0, sortedFilms.size() - count))
                 .collect(Collectors.toList());
+        log.info("Return Top Ten");
         return topTen;
     }
 

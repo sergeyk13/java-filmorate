@@ -14,7 +14,9 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -31,8 +33,9 @@ class FilmControllerTest {
     private LocalDate releaseDate = LocalDate.of(1991, 1, 1);
     private int duration = 90;
     private ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
+    private Set<Integer> likes = new HashSet<>();
 
-    Film testFilm = new Film(name, description, releaseDate, duration, id);
+    Film testFilm = new Film(name, description, releaseDate, duration, id, likes);
 
     @Autowired
     private MockMvc mockMvc;
@@ -76,7 +79,7 @@ class FilmControllerTest {
 
     @Test
     void shouldBeNotCreateNewFilmWithoutName() throws Exception {
-        Film testFilm2 = new Film("", description, releaseDate, duration, id);
+        Film testFilm2 = new Film("", description, releaseDate, duration, id, likes);
         String json = objectMapper.writeValueAsString(testFilm2);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/films")
@@ -88,7 +91,7 @@ class FilmControllerTest {
     @Test
     void shouldBeNotCreateNewFilmWithLongDuration() throws Exception {
         String longDescription = new String(new char[201]).replace('\0', 'A');
-        Film testFilm2 = new Film(name, longDescription, releaseDate, duration, id);
+        Film testFilm2 = new Film(name, longDescription, releaseDate, duration, id, likes);
         String json = objectMapper.writeValueAsString(testFilm2);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/films")
@@ -99,7 +102,7 @@ class FilmControllerTest {
 
     @Test
     void shouldBeNotCreateNewFilmWithWrongTime() throws Exception {
-        Film testFilm2 = new Film(name, description, LocalDate.of(1, 1, 1), duration, id);
+        Film testFilm2 = new Film(name, description, LocalDate.of(1, 1, 1), duration, id, likes);
         String json = objectMapper.writeValueAsString(testFilm2);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/films")
@@ -111,7 +114,7 @@ class FilmControllerTest {
     @Test
     void shouldBeNotCreateNewFilmWithWrongDuration() throws Exception {
         duration = -1;
-        Film testFilm2 = new Film(name, description, releaseDate, duration, id);
+        Film testFilm2 = new Film(name, description, releaseDate, duration, id, likes);
         String json = objectMapper.writeValueAsString(testFilm2);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/films")
@@ -123,7 +126,7 @@ class FilmControllerTest {
     @Test
     void shouldBeUpdateFilmWith() throws Exception {
         String json = objectMapper.writeValueAsString(testFilm);
-        Film testFilm2 = new Film("newName", description, releaseDate, duration, id);
+        Film testFilm2 = new Film("newName", description, releaseDate, duration, id, likes);
         String json2 = objectMapper.writeValueAsString(testFilm2);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/films")

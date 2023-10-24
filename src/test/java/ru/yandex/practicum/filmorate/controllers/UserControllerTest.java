@@ -15,6 +15,7 @@ import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -30,8 +31,9 @@ public class UserControllerTest {
     private String name = "Test User";
     private LocalDate birthday = LocalDate.of(2001, 1, 1);
     private ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
+    private Set<Integer> friendsId;
 
-    private User testUser = new User(email,login,birthday,id,name);
+    private User testUser = new User(email,login,birthday,id,name,friendsId);
 
     @Autowired
     private MockMvc mockMvc;
@@ -77,7 +79,7 @@ public class UserControllerTest {
 
     @Test
     void shouldBeCreateNewUserWithoutName() throws Exception {
-        User testUser2 = new User(email,login,birthday,id,"");
+        User testUser2 = new User(email,login,birthday,id,"",friendsId);
         String json = objectMapper.writeValueAsString(testUser2);
         testUser2.setName(login);
         String checkedJson = objectMapper.writeValueAsString(testUser2);
@@ -92,7 +94,7 @@ public class UserControllerTest {
 
     @Test
     void shouldNotBeCreateNewUserWithoutRightEmail() throws Exception {
-        User testUser2 = new User("email",login,birthday,id,name);
+        User testUser2 = new User("email",login,birthday,id,name,friendsId);
         String json = objectMapper.writeValueAsString(testUser2);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/users")
@@ -103,7 +105,7 @@ public class UserControllerTest {
 
     @Test
     void shouldNotBeCreateNewUserWithBlankEmail() throws Exception {
-        User testUser2 = new User("",login,birthday,id,name);
+        User testUser2 = new User("",login,birthday,id,name,friendsId);
         String json = objectMapper.writeValueAsString(testUser2);
 
 
@@ -115,7 +117,7 @@ public class UserControllerTest {
 
     @Test
     void shouldNotBeCreateNewUserWithBlankLogin() throws Exception {
-        User testUser2 = new User(email,"",birthday,id,name);
+        User testUser2 = new User(email,"",birthday,id,name,friendsId);
         String json = objectMapper.writeValueAsString(testUser2);
 
 
@@ -127,7 +129,7 @@ public class UserControllerTest {
 
     @Test
     void shouldNotBeCreateNewUserWithFutureBirthday() throws Exception {
-        User testUser2 = new User(email,login,LocalDate.of(2222,1,1),id,name);
+        User testUser2 = new User(email,login,LocalDate.of(2222,1,1),id,name,friendsId);
         String json = objectMapper.writeValueAsString(testUser2);
 
 
@@ -141,7 +143,7 @@ public class UserControllerTest {
     @Test
     void shouldBeUpdateUser() throws Exception {
         String json = objectMapper.writeValueAsString(testUser);
-        User testUser2 = new User(email,login,birthday,id,"newName");
+        User testUser2 = new User(email,login,birthday,id,"newName",friendsId);
         String json2 = objectMapper.writeValueAsString(testUser2);
         when(inMemoryUserStorage.updateUser(any(User.class))).thenReturn(testUser2);
 
