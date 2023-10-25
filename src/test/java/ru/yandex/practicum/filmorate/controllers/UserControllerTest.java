@@ -11,6 +11,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
@@ -40,6 +42,8 @@ public class UserControllerTest {
 
     @MockBean
     private InMemoryUserStorage inMemoryUserStorage;
+    @MockBean
+    private UserService userService;
 
     @Test
     void shouldBeGetAllUsersFindAll() throws Exception {
