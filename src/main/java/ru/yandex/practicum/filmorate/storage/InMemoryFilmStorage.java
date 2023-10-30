@@ -23,17 +23,17 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     public Film addFilm(Film film) {
-            for (Film f : films) {
-                if (f.equals(film)) {
-                    log.error("Duplicate error film {}", f.getName());
-                    throw new ValidationException("Фильм уже добавлен в библиотеку фильмов");
-                }
+        for (Film f : films) {
+            if (f.equals(film)) {
+                log.error("Duplicate error film {}", f.getName());
+                throw new ValidationException("Фильм уже добавлен в библиотеку фильмов");
             }
-            film.setId(++id);
-            film.setLikes(new HashSet<>());
-            films.add(film);
-            log.info("Film added: {}", film.getName());
-            return film;
+        }
+        film.setId(++id);
+        film.setLikes(new HashSet<>());
+        films.add(film);
+        log.info("Film added: {}", film.getName());
+        return film;
     }
 
     public Film updateFilm(Film film) {

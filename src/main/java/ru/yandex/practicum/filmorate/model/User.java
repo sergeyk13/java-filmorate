@@ -12,13 +12,13 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 public class User {
-    @NotEmpty
-    @Email
-    private String email;
     @Pattern(regexp = "^[a-zA-Z0-9]{6,12}$",
             message = "username must be of 6 to 12 length with no special characters")
     @NotBlank
     private final String login;
+    @NotEmpty
+    @Email
+    private String email;
     @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
     @PastOrPresent
     private LocalDate birthday;

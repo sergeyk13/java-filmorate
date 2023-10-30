@@ -32,7 +32,7 @@ public class InMemoryUserStorage implements UserStorage {
                     throw new ValidationException("Пользователь с таким email уже существует!");
                 }
             }
-            if (user.getName() == null ) {
+            if (user.getName() == null) {
                 user.setName(user.getLogin());
                 log.info("Set name user:{}", user.getName());
             } else if (user.getName().isBlank()) {
@@ -67,7 +67,7 @@ public class InMemoryUserStorage implements UserStorage {
             log.error("Error updating user: user isn't exist");
             throw new NotFoundException("Пользователь не существует!");
         }
-        log.info("User update: {}",user.getEmail());
+        log.info("User update: {}", user.getEmail());
         users = updatedUsers;
         return user;
     }
