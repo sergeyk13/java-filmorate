@@ -34,7 +34,7 @@ public class InMemoryUserStorage implements UserStorage {
             }
             if (user.getName() == null ) {
                 user.setName(user.getLogin());
-                log.info("Set name user:{}" ,user.getName());
+                log.info("Set name user:{}", user.getName());
             } else if (user.getName().isBlank()) {
                 user.setName(user.getLogin());
                 log.info("Set name user: {}", user.getName());

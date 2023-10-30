@@ -8,6 +8,7 @@
 *.zip
 *.tar.gz
 *.rar
+*.yaml
 .idea
 HELP.md
 hs_err_pid*
