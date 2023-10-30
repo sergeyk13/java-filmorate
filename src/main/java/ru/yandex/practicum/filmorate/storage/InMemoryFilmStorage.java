@@ -32,7 +32,7 @@ public class InMemoryFilmStorage implements FilmStorage {
             film.setId(++id);
             film.setLikes(new HashSet<>());
             films.add(film);
-            log.info("Film added: {}" ,film.getName());
+            log.info("Film added: {}", film.getName());
             return film;
     }
 
