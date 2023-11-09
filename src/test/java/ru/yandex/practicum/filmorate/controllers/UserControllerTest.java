@@ -11,6 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
@@ -33,13 +34,15 @@ public class UserControllerTest {
     private ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
     private Set<Integer> friendsId;
 
-    private User testUser = new User(email,login,birthday,id,name,friendsId);
+    private User testUser = new User(login,email,birthday,id,name,friendsId);
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
     private InMemoryUserStorage inMemoryUserStorage;
+    @MockBean
+    private UserService userService;
 
     @Test
     void shouldBeGetAllUsersFindAll() throws Exception {
@@ -79,7 +82,7 @@ public class UserControllerTest {
 
     @Test
     void shouldBeCreateNewUserWithoutName() throws Exception {
-        User testUser2 = new User(email,login,birthday,id,"",friendsId);
+        User testUser2 = new User(login,email,birthday,id,"",friendsId);
         String json = objectMapper.writeValueAsString(testUser2);
         testUser2.setName(login);
         String checkedJson = objectMapper.writeValueAsString(testUser2);
@@ -143,7 +146,7 @@ public class UserControllerTest {
     @Test
     void shouldBeUpdateUser() throws Exception {
         String json = objectMapper.writeValueAsString(testUser);
-        User testUser2 = new User(email,login,birthday,id,"newName",friendsId);
+        User testUser2 = new User(login,email,birthday,id,"newName",friendsId);
         String json2 = objectMapper.writeValueAsString(testUser2);
         when(inMemoryUserStorage.updateUser(any(User.class))).thenReturn(testUser2);
 

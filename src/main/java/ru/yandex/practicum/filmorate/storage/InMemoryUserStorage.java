@@ -28,23 +28,23 @@ public class InMemoryUserStorage implements UserStorage {
         try {
             for (User u : users) {
                 if (u.getEmail().equals(user.getEmail())) {
-                    log.error("user's email exist");
+                    log.error("user's email: {}, already exist", user.getEmail());
                     throw new ValidationException("Пользователь с таким email уже существует!");
                 }
             }
             if (user.getName() == null) {
                 user.setName(user.getLogin());
-                log.info("Set name user:" + user.getName());
+                log.info("Set name user:{}", user.getName());
             } else if (user.getName().isBlank()) {
                 user.setName(user.getLogin());
-                log.info("Set name user:" + user.getName());
+                log.info("Set name user: {}", user.getName());
             }
             user.setId(++id);
             users.add(user);
             log.info("User add: " + user.getEmail());
             return user;
         } catch (ValidationException e) {
-            log.error("Error adding user: " + e.getMessage());
+            log.error("Error adding user: {}", e.getMessage());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
@@ -65,9 +65,9 @@ public class InMemoryUserStorage implements UserStorage {
 
         if (!isExist) {
             log.error("Error updating user: user isn't exist");
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Пользователь не существует");
+            throw new NotFoundException("Пользователь не существует!");
         }
-        log.info("User update: " + user.getEmail());
+        log.info("User update: {}", user.getEmail());
         users = updatedUsers;
         return user;
     }

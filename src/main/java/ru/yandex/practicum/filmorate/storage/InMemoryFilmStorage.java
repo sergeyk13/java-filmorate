@@ -2,9 +2,7 @@ package ru.yandex.practicum.filmorate.storage;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exeption.NotFoundException;
 import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -25,23 +23,17 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     public Film addFilm(Film film) {
-        try {
-            for (Film f : films) {
-                if (f.equals(film)) {
-                    log.error("Duplicate error");
-                    throw new ValidationException("Фильм уже добавлен в библиотеку фильмов");
-                }
+        for (Film f : films) {
+            if (f.equals(film)) {
+                log.error("Duplicate error film {}", f.getName());
+                throw new ValidationException("Фильм уже добавлен в библиотеку фильмов");
             }
-            film.setId(++id);
-            film.setLikes(new HashSet<>());
-            films.add(film);
-            log.info("Film added: " + film.getName());
-
-            return film;
-        } catch (ValidationException e) {
-            log.error("Error adding film: " + e.getMessage());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
+        film.setId(++id);
+        film.setLikes(new HashSet<>());
+        films.add(film);
+        log.info("Film added: {}", film.getName());
+        return film;
     }
 
     public Film updateFilm(Film film) {
@@ -57,9 +49,9 @@ public class InMemoryFilmStorage implements FilmStorage {
             }
         }
         if (!isExist) {
-            log.error("Error updating film: " + film.getName() + " isn't exist");
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Фильм " + film.getName() +
-                    " не существует");
+            log.error("Error updating film: {} isn't exist", film.getName());
+            throw new NotFoundException("Фильм " + film.getName() +
+                    " несуществует");
         }
         log.info("Film update: " + film.getName());
         films = updatedFilms;

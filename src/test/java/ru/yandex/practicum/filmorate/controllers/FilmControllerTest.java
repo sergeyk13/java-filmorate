@@ -11,10 +11,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -33,7 +33,7 @@ class FilmControllerTest {
     private LocalDate releaseDate = LocalDate.of(1991, 1, 1);
     private int duration = 90;
     private ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
-    private Set<Integer> likes = new HashSet<>();
+    private Set<Integer> likes;
 
     Film testFilm = new Film(name, description, releaseDate, duration, id, likes);
 
@@ -41,6 +41,8 @@ class FilmControllerTest {
     private MockMvc mockMvc;
     @MockBean
     private InMemoryFilmStorage inMemoryFilmStorage;
+    @MockBean
+    private FilmService filmService;
 
     @Test
     void shouldBeGetAllFilmFindAll() throws Exception {

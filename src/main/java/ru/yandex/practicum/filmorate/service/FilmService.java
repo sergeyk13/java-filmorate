@@ -25,7 +25,7 @@ public class FilmService {
             film.setLikes(new HashSet<>());
         }
         film.addLike(userId);
-        log.info("Add like from user: " + userId + " to film: " + film.getName());
+        log.info("Add like from user: {} to film: {}", userId, film.getName());
     }
 
     public void removeLike(Film film, int userId) {
@@ -33,7 +33,7 @@ public class FilmService {
         Set<Integer> likes = film.getLikes();
         likes.remove(userId);
         film.setLikes(likes);
-        log.info("Remove like from user: " + userId + " to film: " + film.getName());
+        log.info("Remove like from user: {} to film: {}", userId, film.getName());
     }
 
     public List<Film> viewTenPopular(Integer count) {

@@ -30,8 +30,7 @@ public class UserService {
 
         addFrend(firstUser, secondId);
         addFrend(secondUser, firstId);
-        log.info("user: "+ firstId + " and user: " + secondId +
-                " start friendship");
+        log.info("user: {} and user: {} start friendship", firstUser, secondId);
     }
 
     private void addFrend(User user, int friendId) {
@@ -60,8 +59,7 @@ public class UserService {
             user.setFriendsId(friends);
             secondFriends.remove(user.getId());
             secondUser.setFriendsId(secondFriends);
-            log.info("user: "+ user.getId() + " and user: " + secondUser.getId() +
-                    " friendship over");
+            log.info("user: {} and user: {} friendship over", user.getId(), secondUser.getId());
         }
     }
 
@@ -75,8 +73,7 @@ public class UserService {
         } else if (commonFriendsSecondUser == null) {
             return commonFriends;
         } else {
-            commonFriendsFirstUser.forEach(id ->
-            {
+            commonFriendsFirstUser.forEach(id -> {
                 if (commonFriendsSecondUser.contains(id)) {
                     commonSet.add(id);
                 }
@@ -86,9 +83,8 @@ public class UserService {
     }
 
     public List<User> returnFriends(Set<Integer> idList) throws NotFoundException {
-        List<User> friends = idList.stream()
+        return idList.stream()
                 .map(userStorage::findOne)
                 .collect(Collectors.toList());
-        return friends;
     }
 }
