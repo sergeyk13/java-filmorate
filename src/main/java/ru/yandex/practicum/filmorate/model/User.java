@@ -7,6 +7,7 @@ import lombok.Getter;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.Set;
 
 @Data
@@ -15,7 +16,7 @@ public class User {
     @Pattern(regexp = "^[a-zA-Z0-9]{6,12}$",
             message = "username must be of 6 to 12 length with no special characters")
     @NotBlank
-    private final String login;
+    private String login;
     @NotEmpty
     @Email
     private String email;
@@ -26,6 +27,7 @@ public class User {
     private String name;
     @Getter
     private Set<Integer> friendsId;
+    private HashMap<Integer, Friendship> friendship;
 
     public void setFriendsId(Set<Integer> friendsId) {
         this.friendsId = friendsId;

@@ -16,7 +16,7 @@ import java.util.List;
 @Slf4j
 public class InMemoryFilmStorage implements FilmStorage {
     private int id = 0;
-    private List<Film> films = new ArrayList<>();
+    private final List<Film> films = new ArrayList<>();
 
     public Film findOne(int id) throws NotFoundException {
         return films.stream().filter(film -> film.getId() == id).findFirst().orElseThrow(NotFoundException::new);
@@ -38,14 +38,12 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     public Film updateFilm(Film film) {
         boolean isExist = false;
-        List<Film> updatedFilms = new ArrayList<>();
 
         for (Film existingFilm : films) {
             if (existingFilm.getId() == film.getId()) {
-                updatedFilms.add(film);
+                films.remove(existingFilm);
+                films.add(film);
                 isExist = true;
-            } else {
-                updatedFilms.add(existingFilm);
             }
         }
         if (!isExist) {
@@ -53,8 +51,6 @@ public class InMemoryFilmStorage implements FilmStorage {
             throw new NotFoundException("Фильм " + film.getName() +
                     " несуществует");
         }
-        log.info("Film update: " + film.getName());
-        films = updatedFilms;
         return film;
     }
 }

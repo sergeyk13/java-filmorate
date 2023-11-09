@@ -21,6 +21,7 @@ public class FilmController {
 
     @GetMapping
     public List<Film> getFilms() {
+        log.info("Return films list");
         return inMemoryFilmStorage.getFilms();
     }
 

@@ -18,7 +18,7 @@ import java.util.Set;
 @Slf4j
 public class InMemoryUserStorage implements UserStorage {
     private int id = 0;
-    private List<User> users = new ArrayList<>();
+    private final List<User> users = new ArrayList<>();
 
     public User findOne(int id) throws NotFoundException {
         return users.stream().filter(user -> user.getId() == id).findFirst().orElseThrow(NotFoundException::new);
@@ -41,7 +41,7 @@ public class InMemoryUserStorage implements UserStorage {
             }
             user.setId(++id);
             users.add(user);
-            log.info("User add: " + user.getEmail());
+            log.info("User add: ID: {}, email: {}", id, user.getEmail());
             return user;
         } catch (ValidationException e) {
             log.error("Error adding user: {}", e.getMessage());
@@ -50,25 +50,19 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     public User updateUser(User user) {
-
         boolean isExist = false;
-        List<User> updatedUsers = new ArrayList<>();
-
         for (User existingUser : users) {
             if (existingUser.getId() == user.getId()) {
-                updatedUsers.add(user);
+                users.remove(existingUser);
+                users.add(user);
                 isExist = true;
-            } else {
-                updatedUsers.add(existingUser);
             }
         }
-
         if (!isExist) {
             log.error("Error updating user: user isn't exist");
             throw new NotFoundException("Пользователь не существует!");
         }
-        log.info("User update: {}", user.getEmail());
-        users = updatedUsers;
+        log.info("User update: ID: {}, email: {}", user.getEmail(), user.getEmail());
         return user;
     }
 
