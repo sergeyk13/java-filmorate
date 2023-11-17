@@ -2,16 +2,19 @@ package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
 @AllArgsConstructor
+@Builder
 public class User {
     @Pattern(regexp = "^[a-zA-Z0-9]{6,12}$",
             message = "username must be of 6 to 12 length with no special characters")
@@ -27,7 +30,17 @@ public class User {
     private String name;
     @Getter
     private Set<Integer> friendsId;
-    private HashMap<Integer, Friendship> friendship;
+    private HashMap<Integer, Boolean> friendship;
+
+    public User(String login, String email, LocalDate birthday, int id, String name) {
+        this.login = login;
+        this.email = email;
+        this.birthday = birthday;
+        this.id = id;
+        this.name = name;
+        this.friendsId = new HashSet<>();
+        this.friendship = new HashMap<>();
+    }
 
     public void setFriendsId(Set<Integer> friendsId) {
         this.friendsId = friendsId;

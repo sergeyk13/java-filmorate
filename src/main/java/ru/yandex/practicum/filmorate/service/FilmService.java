@@ -2,10 +2,12 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exeption.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.Comparator;
 import java.util.HashSet;
@@ -17,27 +19,29 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class FilmService {
-    private final InMemoryFilmStorage inMemoryFilmStorage;
-    private final InMemoryUserStorage inMemoryUserStorage;
+    @Qualifier("filmDbStorage")
+    private final FilmStorage filmStorage;
+    @Qualifier("userDbStorage")
+    private final UserStorage userStorage;
 
     public void addLike(Film film, int userId) {
         if (film.getLikes() == null) {
             film.setLikes(new HashSet<>());
         }
         film.addLike(userId);
-        log.info("Add like from user: {} to film: {}", userId, film.getName());
+        log.info("Add like from user: {} to film: {}", userId, film.getTitle());
     }
 
     public void removeLike(Film film, int userId) {
-        inMemoryUserStorage.findOne(userId);
+        userStorage.findOne(userId);
         Set<Integer> likes = film.getLikes();
         likes.remove(userId);
         film.setLikes(likes);
-        log.info("Remove like from user: {} to film: {}", userId, film.getName());
+        log.info("Remove like from user: {} to film: {}", userId, film.getTitle());
     }
 
     public List<Film> viewTenPopular(Integer count) {
-        List<Film> filmList = inMemoryFilmStorage.getFilms();
+        List<Film> filmList = filmStorage.getAll();
 
         if (count == null) {
             count = 10;
@@ -53,4 +57,19 @@ public class FilmService {
         return topTen;
     }
 
+    public Film findOne(int id) throws NotFoundException {
+        return filmStorage.findOne(id);
+    }
+
+    public Film addFilm(Film film){
+        return filmStorage.addFilm(film);
+    }
+
+    public Film updateFilm(Film film) {
+        return filmStorage.updateFilm(film);
+    }
+
+    public List<Film> getAll(){
+        return filmStorage.getAll();
+    }
 }

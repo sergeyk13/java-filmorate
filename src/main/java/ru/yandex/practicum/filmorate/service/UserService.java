@@ -2,11 +2,12 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exeption.FriendAlreasdyAddedExeption;
 import ru.yandex.practicum.filmorate.exeption.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -17,10 +18,10 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class UserService {
-    private final InMemoryUserStorage userStorage;
+    private final UserStorage userStorage;
 
     @Autowired
-    public UserService(InMemoryUserStorage userStorage) {
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
         this.userStorage = userStorage;
     }
 
@@ -28,12 +29,12 @@ public class UserService {
         User firstUser = userStorage.findOne(firstId);
         User secondUser = userStorage.findOne(secondId);
 
-        addFrend(firstUser, secondId);
-        addFrend(secondUser, firstId);
+        addFriend(firstUser, secondId);
+        addFriend(secondUser, firstId);
         log.info("user: {} and user: {} start friendship", firstUser, secondId);
     }
 
-    private void addFrend(User user, int friendId) {
+    private void addFriend(User user, int friendId) {
         if (user.getFriendsId() != null) {
             Set<Integer> friends = user.getFriendsId();
             if (friends.contains(friendId)) {
@@ -86,5 +87,25 @@ public class UserService {
         return idList.stream()
                 .map(userStorage::findOne)
                 .collect(Collectors.toList());
+    }
+
+    public User findOne(int id) throws NotFoundException{
+        return userStorage.findOne(id);
+    }
+
+    public User create(User user){
+        return userStorage.create(user);
+    }
+
+    public User updateUser(User user) {
+        return userStorage.updateUser(user);
+    }
+
+    public Set<Integer> returnFriendsId(int id) throws NotFoundException {
+        return userStorage.returnFriendsId(id);
+    }
+
+    public List<User> getAll(){
+        return userStorage.getAll();
     }
 }

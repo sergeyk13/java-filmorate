@@ -12,7 +12,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.db.FilmDbStorage;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -40,7 +40,7 @@ class FilmControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @MockBean
-    private InMemoryFilmStorage inMemoryFilmStorage;
+    private FilmDbStorage filmDbStorage;
     @MockBean
     private FilmService filmService;
 
@@ -48,7 +48,7 @@ class FilmControllerTest {
     void shouldBeGetAllFilmFindAll() throws Exception {
 
         var filmList = List.of(testFilm);
-        when(this.inMemoryFilmStorage.getFilms()).thenReturn(filmList);
+        when(this.filmDbStorage.getAll()).thenReturn(filmList);
 
         mockMvc.perform(get("/films"))
                 .andExpect(status().isOk())
@@ -69,7 +69,7 @@ class FilmControllerTest {
     @Test
     void findOneShouldReturnValidFilm() throws Exception {
         var filmList = List.of(testFilm);
-        when(this.inMemoryFilmStorage.findOne(1)).thenReturn(filmList.get(0));
+        when(this.filmDbStorage.findOne(1)).thenReturn(filmList.get(0));
 
         mockMvc.perform(get("/films/1"))
                 .andExpect(status().isOk())
@@ -144,8 +144,8 @@ class FilmControllerTest {
 
     @Test
     void shouldBeNotBeUpdateNotExistFilm() throws Exception {
-        when(inMemoryFilmStorage.updateFilm(any(Film.class))).thenThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                "Фильм " + testFilm.getName() + " не существует"));
+        when(filmDbStorage.updateFilm(any(Film.class))).thenThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                "Фильм " + testFilm.getTitle() + " не существует"));
 
         String json = objectMapper.writeValueAsString(testFilm);
 
