@@ -10,6 +10,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,14 +32,14 @@ public class Film {
     private int id;
     private Set<Integer> likes;
     private List<Genre> genres;
-    private List<Rating> rating;
+    private List<Mpa> mpa;
 
-    public Film(String name, String description, LocalDate releaseDate, int duration, int id, Set<Integer> likes) {
-        this.title = name;
+    public Film(String title, String description, LocalDate releaseDate, int duration) {
+        this.title = title;
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
-        this.id = id;
+        this.mpa = new ArrayList<>();
         this.likes = new HashSet<>();
     }
 

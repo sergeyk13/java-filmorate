@@ -6,7 +6,7 @@ merge into PUBLIC.GENRES (GENRE_ID, GENRE)
            (5, 'Документальный'),
            (6,'Боевик');
 
-merge into PUBLIC.RATING (RATING_ID,RATING)
+merge into PUBLIC.MPA (RATING_ID,RATING)
     values (1, 'G'),
            (2, 'PG'),
            (3, 'PG=13'),

@@ -7,7 +7,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class Rating {
+public class Mpa {
   private final int rating_id;
   private String rating;
 }

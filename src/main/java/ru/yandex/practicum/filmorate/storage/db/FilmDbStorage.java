@@ -20,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
+    private final MpaDbStorage mpaDbStorage;
     @Override
     public List<Film> getAll() {
         String sqlQuery = "SELECT * FROM FILMS";
@@ -75,7 +76,6 @@ public class FilmDbStorage implements FilmStorage {
 
     private static Film createFilm(ResultSet rs, int rowNum) throws SQLException {
         return Film.builder()
-                .id(rs.getInt("FILM_ID"))
                 .title(rs.getString("TITLE"))
                 .description(rs.getString("DESCRIPTION"))
                 .releaseDate(convertTimestampToLocalDate(rs.getTimestamp("RELEASE_DATE")))
