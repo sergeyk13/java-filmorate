@@ -32,11 +32,15 @@ public class User {
     private Set<Integer> friendsId;
     private HashMap<Integer, Boolean> friendship;
 
-    public User(String login, String email, LocalDate birthday, int id, String name) {
+    public User() {
+        this.friendsId = new HashSet<>();
+        this.friendship = new HashMap<>();
+    }
+
+    public User(String login, String email, LocalDate birthday, String name) {
         this.login = login;
         this.email = email;
         this.birthday = birthday;
-        this.id = id;
         this.name = name;
         this.friendsId = new HashSet<>();
         this.friendship = new HashMap<>();
@@ -44,5 +48,9 @@ public class User {
 
     public void setFriendsId(Set<Integer> friendsId) {
         this.friendsId = friendsId;
+    }
+
+    public void setFriendship(HashMap<Integer, Boolean> friendship) {
+        this.friendship = friendship;
     }
 }

@@ -8,6 +8,8 @@ import ru.yandex.practicum.filmorate.exeption.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.GenreStorage;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,16 +19,29 @@ public class GenreDbStorage implements GenreStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
-    @Override
-    public Genre findOne(int id) {
-        String sqlQuery = "SELECT * FROM genres WHERE genre_id = ?";
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlQuery, id);
+    private static Genre createGenre(ResultSet rs, int rowNum) throws SQLException {
+        return Genre.builder()
+                .id(rs.getInt("ID"))
+                .name(rs.getString("GENRE"))
+                .build();
+    }
 
-        if (rowSet.next()) {
-            return new Genre(rowSet.getInt("genre_id"), rowSet.getString("genre"));
-        } else {
+    @Override
+    public List<Genre> findOne(int id) {
+        String sqlQuery = "SELECT * FROM genres WHERE id = ?";
+        List<Genre> genreList = jdbcTemplate.query(sqlQuery, GenreDbStorage::createGenre, id);
+        if (genreList.size() != 1) {
             throw new NotFoundException();
-        }
+        } else return genreList;
+    }
+
+    @Override
+    public Genre getOne(int id) throws NotFoundException {
+        String sqlQuery = "SELECT * FROM genres WHERE id = ?";
+        List<Genre> genreList = jdbcTemplate.query(sqlQuery, GenreDbStorage::createGenre, id);
+        if (genreList.size() != 1) {
+            throw new NotFoundException();
+        } else return genreList.get(0);
     }
 
     @Override
@@ -36,7 +51,7 @@ public class GenreDbStorage implements GenreStorage {
         List<Genre> list = new ArrayList<>();
 
         while (rowSet.next()) {
-            list.add(new Genre(rowSet.getInt("genre_id"), rowSet.getString("genre")));
+            list.add(new Genre(rowSet.getInt("id"), rowSet.getString("genre")));
         }
         if (list.isEmpty()) {
             throw new NotFoundException();

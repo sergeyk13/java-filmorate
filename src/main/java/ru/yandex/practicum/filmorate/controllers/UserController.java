@@ -51,7 +51,7 @@ public class UserController {
 
     @GetMapping("{id}/friends")
     public List<User> getFriends(@PathVariable int id) throws NotFoundException {
-        return userService.returnFriends(userService.returnFriendsId(id));
+        return userService.returnFriends(userService.getFriendsId(id));
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")

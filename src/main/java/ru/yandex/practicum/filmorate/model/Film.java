@@ -10,7 +10,6 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -21,29 +20,43 @@ import java.util.Set;
 public class Film {
 
     @NotBlank
-    private String title;
+    private String name;
     @Size(max = 200)
-    private final String description;
+    private String description;
     @MinimumDate
     @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
     private LocalDate releaseDate;
     @Min(1)
-    private final int duration;
+    private int duration;
     private int id;
     private Set<Integer> likes;
     private List<Genre> genres;
-    private List<Mpa> mpa;
+    private Mpa mpa;
 
-    public Film(String title, String description, LocalDate releaseDate, int duration) {
-        this.title = title;
+    public Film() {
+    }
+
+    public Film(String name, String description, LocalDate releaseDate, int duration) {
+        this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
-        this.mpa = new ArrayList<>();
         this.likes = new HashSet<>();
     }
 
     public void addLike(int userId) {
         this.likes.add(userId);
+    }
+
+    public void setLike(Set<Integer> likes) {
+        this.likes = likes;
+    }
+
+    public void addGenre(Genre genre) {
+        genres.add(genre);
+    }
+
+    public void setGenre(List<Genre> genres) {
+        this.genres = genres;
     }
 }

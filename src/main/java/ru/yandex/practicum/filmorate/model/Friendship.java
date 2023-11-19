@@ -3,13 +3,12 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 @AllArgsConstructor
-@Getter
-@Setter
 @Builder
-public class Mpa {
-    private int id;
-    private String name;
+@Getter
+public class Friendship {
+    private int userId;
+    private int friendId;
+    private boolean status;
 }

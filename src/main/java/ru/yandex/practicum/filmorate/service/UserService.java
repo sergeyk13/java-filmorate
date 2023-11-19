@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exeption.FriendAlreasdyAddedExeption;
 import ru.yandex.practicum.filmorate.exeption.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.FriendshipStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.ArrayList;
@@ -19,10 +20,13 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
     private final UserStorage userStorage;
+    private final FriendshipStorage friendshipStorage;
 
     @Autowired
-    public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage, FriendshipStorage friendshipStorage) {
         this.userStorage = userStorage;
+
+        this.friendshipStorage = friendshipStorage;
     }
 
     public void addFriends(Integer firstId, Integer secondId) throws FriendAlreasdyAddedExeption {
@@ -30,7 +34,9 @@ public class UserService {
         User secondUser = userStorage.findOne(secondId);
 
         addFriend(firstUser, secondId);
-        addFriend(secondUser, firstId);
+        friendshipStorage.addFriend(firstId, secondId);
+//        addFriend(secondUser, firstId);
+//        friendshipStorage.addFriend(secondId,firstId);
         log.info("user: {} and user: {} start friendship", firstUser, secondId);
     }
 
@@ -60,6 +66,7 @@ public class UserService {
             user.setFriendsId(friends);
             secondFriends.remove(user.getId());
             secondUser.setFriendsId(secondFriends);
+            friendshipStorage.removeFriend(user.getId(), secondUser.getId());
             log.info("user: {} and user: {} friendship over", user.getId(), secondUser.getId());
         }
     }
@@ -89,23 +96,29 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public User findOne(int id) throws NotFoundException{
+    public User findOne(int id) throws NotFoundException {
         return userStorage.findOne(id);
     }
 
-    public User create(User user){
+    public User create(User user) {
+        log.info("Create User: {}", user);
+        if (user.getName().isBlank()) {
+            log.info("Change name on login: {}", user.getLogin());
+            user.setName(user.getLogin());
+        }
         return userStorage.create(user);
     }
 
     public User updateUser(User user) {
+        userStorage.findOne(user.getId());
         return userStorage.updateUser(user);
     }
 
-    public Set<Integer> returnFriendsId(int id) throws NotFoundException {
-        return userStorage.returnFriendsId(id);
+    public Set<Integer> getFriendsId(int id) throws NotFoundException {
+        return userStorage.getFriendsId(id);
     }
 
-    public List<User> getAll(){
+    public List<User> getAll() {
         return userStorage.getAll();
     }
 }

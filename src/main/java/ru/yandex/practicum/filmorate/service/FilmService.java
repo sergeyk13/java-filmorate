@@ -2,42 +2,55 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exeption.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.LikesStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class FilmService {
-    @Qualifier("filmDbStorage")
+
     private final FilmStorage filmStorage;
-    @Qualifier("userDbStorage")
+    private final LikesStorage likesStorage;
     private final UserStorage userStorage;
 
-    public void addLike(Film film, int userId) {
-        if (film.getLikes() == null) {
-            film.setLikes(new HashSet<>());
-        }
-        film.addLike(userId);
-        log.info("Add like from user: {} to film: {}", userId, film.getTitle());
+    public void addLike(int filmId, int userId) {
+        userStorage.findOne(userId);
+        filmStorage.findOne(filmId);
+        likesStorage.addLike(filmId, userId);
+        log.info("Add like from user: {} to film: {}", userId, filmId);
     }
 
-    public void removeLike(Film film, int userId) {
+    public void removeLike(int filmId, int userId) {
         userStorage.findOne(userId);
-        Set<Integer> likes = film.getLikes();
-        likes.remove(userId);
-        film.setLikes(likes);
-        log.info("Remove like from user: {} to film: {}", userId, film.getTitle());
+        filmStorage.findOne(filmId);
+        likesStorage.removeLike(filmId, userId);
+        log.info("Remove like from user: {} to film: {}", userId, filmId);
+    }
+
+    public Film findOne(int id) throws NotFoundException {
+        return filmStorage.findOne(id);
+    }
+
+    public Film addFilm(Film film) {
+        log.info("Add film: {}", film);
+        return filmStorage.addFilm(film);
+    }
+
+    public Film updateFilm(Film film) {
+        return filmStorage.updateFilm(film);
+    }
+
+    public List<Film> getAll() {
+        return filmStorage.getAll();
     }
 
     public List<Film> viewTenPopular(Integer count) {
@@ -55,21 +68,5 @@ public class FilmService {
                 .collect(Collectors.toList());
         log.info("Return Top Ten");
         return topTen;
-    }
-
-    public Film findOne(int id) throws NotFoundException {
-        return filmStorage.findOne(id);
-    }
-
-    public Film addFilm(Film film){
-        return filmStorage.addFilm(film);
-    }
-
-    public Film updateFilm(Film film) {
-        return filmStorage.updateFilm(film);
-    }
-
-    public List<Film> getAll(){
-        return filmStorage.getAll();
     }
 }

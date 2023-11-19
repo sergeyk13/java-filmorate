@@ -18,6 +18,7 @@ import java.util.List;
 public class RatingController {
 
     private final MpaService service;
+
     @GetMapping
     public List<Mpa> getAll() {
         final List<Mpa> mpas = service.getAll();
@@ -26,7 +27,7 @@ public class RatingController {
     }
 
     @GetMapping("/{id}")
-    public Mpa getById(@PathVariable int id ) {
+    public Mpa getById(@PathVariable int id) {
         log.info("получение рейтинга по id: {}", id);
         return service.getById(id);
     }

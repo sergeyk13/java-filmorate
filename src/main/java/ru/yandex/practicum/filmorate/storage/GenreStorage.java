@@ -7,7 +7,10 @@ import java.util.List;
 
 public interface GenreStorage {
 
-    Genre findOne(int id) throws NotFoundException;
+    List<Genre> findOne(int id) throws NotFoundException;
+
+    Genre getOne(int id) throws NotFoundException;
 
     List<Genre> getAll();
+
 }

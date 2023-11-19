@@ -18,7 +18,11 @@ public class GenreService {
         return storage.getAll();
     }
 
-    public Genre getById(int id) {
+    public Genre getOne(int id) {
+        return storage.getOne(id);
+    }
+
+    public List<Genre> getById(int id) {
         return storage.findOne(id);
     }
 }
