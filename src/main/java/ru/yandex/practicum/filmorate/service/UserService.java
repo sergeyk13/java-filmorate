@@ -35,8 +35,6 @@ public class UserService {
 
         addFriend(firstUser, secondId);
         friendshipStorage.addFriend(firstId, secondId);
-//        addFriend(secondUser, firstId);
-//        friendshipStorage.addFriend(secondId,firstId);
         log.info("user: {} and user: {} start friendship", firstUser, secondId);
     }
 
@@ -53,6 +51,7 @@ public class UserService {
             Set<Integer> newList = new HashSet<>();
             newList.add(friendId);
             user.setFriendsId(newList);
+            log.info("User: {} add friend: {}", user.getId(), friendId);
         }
     }
 
@@ -86,11 +85,13 @@ public class UserService {
                     commonSet.add(id);
                 }
             });
+            log.info("Return common friends list");
             return returnFriends(commonSet);
         }
     }
 
     public List<User> returnFriends(Set<Integer> idList) throws NotFoundException {
+        log.info("Return friends list");
         return idList.stream()
                 .map(userStorage::findOne)
                 .collect(Collectors.toList());
@@ -101,24 +102,27 @@ public class UserService {
     }
 
     public User create(User user) {
-        log.info("Create User: {}", user);
         if (user.getName().isBlank()) {
             log.info("Change name on login: {}", user.getLogin());
             user.setName(user.getLogin());
         }
+        log.info("Create User: {}", user);
         return userStorage.create(user);
     }
 
     public User updateUser(User user) {
         userStorage.findOne(user.getId());
+        log.info("Update User: {}", user);
         return userStorage.updateUser(user);
     }
 
     public Set<Integer> getFriendsId(int id) throws NotFoundException {
+        log.info("Return friend's id list");
         return userStorage.getFriendsId(id);
     }
 
     public List<User> getAll() {
+        log.info("Return all user list");
         return userStorage.getAll();
     }
 }

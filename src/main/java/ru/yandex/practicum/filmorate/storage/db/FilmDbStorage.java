@@ -65,11 +65,11 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Film findOne(int id) throws NotFoundException {
+    public Film findOne(int id) {
         String sqlQuery = "SELECT * FROM FILMS WHERE ID = ?";
         List<Film> films = jdbcTemplate.query(sqlQuery, FilmDbStorage::createFilm, id);
         if (films.size() != 1) {
-            throw new NotFoundException();
+            throw new NotFoundException("film witch id: " + id + " not find");
         } else {
             return compareFilm(films.get(0));
         }
@@ -135,7 +135,7 @@ public class FilmDbStorage implements FilmStorage {
                 throw new ValidationException("Обновление в фильма, ошибка параметра");
             }
         } else {
-            throw new NotFoundException();
+            throw new NotFoundException("film witch id: " + film.getId() + " not find");
         }
         return compareFilm(film);
     }

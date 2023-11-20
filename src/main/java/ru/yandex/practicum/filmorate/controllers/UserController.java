@@ -21,41 +21,49 @@ public class UserController {
 
     @GetMapping()
     public List<User> findAll() {
+        log.info("Request get all users");
         return userService.getAll();
     }
 
     @PostMapping()
     public User create(@RequestBody @Valid User user) {
+        log.info("Request create user");
         return userService.create(user);
     }
 
     @PutMapping()
     public User updateUser(@RequestBody @Valid User user) {
+        log.info("Request update user");
         return userService.updateUser(user);
     }
 
     @GetMapping("/{id}")
     public User findOne(@PathVariable int id) throws NotFoundException {
+        log.info("Request find one");
         return userService.findOne(id);
     }
 
     @PutMapping("/{id}/friends/{friendId}")
     public void addFriends(@PathVariable int id, @PathVariable int friendId) throws NotFoundException, FriendAlreasdyAddedExeption {
+        log.info("Request add friend");
         userService.addFriends(id, friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
     public void removeFriends(@PathVariable int id, @PathVariable int friendId) throws NotFoundException, FriendAlreasdyAddedExeption {
+        log.info("Request femove from friend");
         userService.removeFromFriends(userService.findOne(id), userService.findOne(friendId));
     }
 
     @GetMapping("{id}/friends")
     public List<User> getFriends(@PathVariable int id) throws NotFoundException {
+        log.info("Request get friend");
         return userService.returnFriends(userService.getFriendsId(id));
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
     public List<User> getCommonFriends(@PathVariable int id, @PathVariable int otherId) throws NotFoundException {
+        log.info("Request get common friend");
         return userService.showCommonFriends(userService.findOne(id), userService.findOne(otherId));
     }
 }

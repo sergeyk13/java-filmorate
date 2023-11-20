@@ -37,6 +37,7 @@ public class FilmService {
     }
 
     public Film findOne(int id) throws NotFoundException {
+        log.info("Return film: {}", id);
         return filmStorage.findOne(id);
     }
 
@@ -46,14 +47,16 @@ public class FilmService {
     }
 
     public Film updateFilm(Film film) {
+        log.info("Update film: {}", film);
         return filmStorage.updateFilm(film);
     }
 
     public List<Film> getAll() {
+        log.info("Return all film list");
         return filmStorage.getAll();
     }
 
-    public List<Film> viewTenPopular(Integer count) {
+    public List<Film> getTopFilms(Integer count) {
         List<Film> filmList = filmStorage.getAll();
 
         if (count == null) {
@@ -66,7 +69,7 @@ public class FilmService {
         List<Film> topTen = sortedFilms.stream()
                 .skip(Math.max(0, sortedFilms.size() - count))
                 .collect(Collectors.toList());
-        log.info("Return Top Ten");
+        log.info("Return Top films");
         return topTen;
     }
 }

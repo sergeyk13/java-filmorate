@@ -15,5 +15,5 @@ public interface UserStorage {
 
     User updateUser(User user);
 
-    Set<Integer> getFriendsId(int id) throws NotFoundException;
+    Set<Integer> getFriendsId(int id);
 }

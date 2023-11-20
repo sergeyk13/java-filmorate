@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.db;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -22,6 +23,7 @@ import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class UserDbStorage implements UserStorage {
 
     private final JdbcTemplate jdbcTemplate;
@@ -61,7 +63,7 @@ public class UserDbStorage implements UserStorage {
         String sqlQuery = "SELECT * FROM USERS WHERE id = ?";
         List<User> users = jdbcTemplate.query(sqlQuery, UserDbStorage::createUser, id);
         if (users.size() != 1) {
-            throw new NotFoundException();
+            throw new NotFoundException("user witch id: " + id + " not find");
         } else {
             User user = users.get(0);
             user.setFriendsId(getFriendsId(user.getId()));
@@ -111,12 +113,17 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public Set<Integer> getFriendsId(int userId) throws NotFoundException {
-        String sqlQuery = "SELECT FRIEND_ID FROM FRIENDSHIP WHERE user_id = ?";
+    public Set<Integer> getFriendsId(int userId) {
         Set<Integer> friendsIds = new HashSet<>();
+        try {
+            String sqlQuery = "SELECT FRIEND_ID FROM FRIENDSHIP WHERE user_id = ?";
 
-        jdbcTemplate.query(sqlQuery, (rs, rowNum) -> rs.getInt("friend_id"), userId)
-                .forEach(friendsIds::add);
+            jdbcTemplate.query(sqlQuery, (rs, rowNum) -> rs.getInt("friend_id"), userId)
+                    .forEach(friendsIds::add);
+            return friendsIds;
+        } catch (NotFoundException e) {
+            log.error("Get friends id for user: " + userId + " unpassable");
+        }
         return friendsIds;
     }
 
