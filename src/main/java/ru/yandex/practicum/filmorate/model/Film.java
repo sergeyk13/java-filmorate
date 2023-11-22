@@ -29,7 +29,6 @@ public class Film {
     @Min(1)
     private int duration;
     private int id;
-    private Set<Integer> likes;
     private List<Genre> genres;
     private Mpa mpa;
 
@@ -41,19 +40,6 @@ public class Film {
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
-        this.likes = new HashSet<>();
-    }
-
-    public void addLike(int userId) {
-        this.likes.add(userId);
-    }
-
-    public void setLike(Set<Integer> likes) {
-        this.likes = likes;
-    }
-
-    public void addGenre(Genre genre) {
-        genres.add(genre);
     }
 
     public void setGenre(List<Genre> genres) {

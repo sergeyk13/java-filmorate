@@ -31,7 +31,7 @@ public class GenreDbStorage implements GenreStorage {
         String sqlQuery = "SELECT * FROM genres WHERE id = ?";
         List<Genre> genreList = jdbcTemplate.query(sqlQuery, GenreDbStorage::createGenre, id);
         if (genreList.size() != 1) {
-            throw new NotFoundException();
+            throw new NotFoundException("Genre id: " + id);
         } else return genreList;
     }
 
@@ -40,7 +40,7 @@ public class GenreDbStorage implements GenreStorage {
         String sqlQuery = "SELECT * FROM genres WHERE id = ?";
         List<Genre> genreList = jdbcTemplate.query(sqlQuery, GenreDbStorage::createGenre, id);
         if (genreList.size() != 1) {
-            throw new NotFoundException();
+            throw new NotFoundException("Genre id: " + id);
         } else return genreList.get(0);
     }
 
@@ -54,7 +54,7 @@ public class GenreDbStorage implements GenreStorage {
             list.add(new Genre(rowSet.getInt("id"), rowSet.getString("genre")));
         }
         if (list.isEmpty()) {
-            throw new NotFoundException();
+            throw new NotFoundException("genres not found in table GENRES");
         } else {
             return list;
         }

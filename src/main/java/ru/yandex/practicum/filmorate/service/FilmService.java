@@ -9,8 +9,7 @@ import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.LikesStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -56,20 +55,17 @@ public class FilmService {
         return filmStorage.getAll();
     }
 
-    public List<Film> getTopFilms(Integer count) {
-        List<Film> filmList = filmStorage.getAll();
-
+    public Set<Film> getTopFilms(Integer count) {
         if (count == null) {
             count = 10;
         }
-        List<Film> sortedFilms = filmList.stream()
-                .sorted(Comparator.comparingInt(film -> film.getLikes().size()))
-                .collect(Collectors.toList());
 
-        List<Film> topTen = sortedFilms.stream()
-                .skip(Math.max(0, sortedFilms.size() - count))
-                .collect(Collectors.toList());
+        List<Integer> listFilmID = likesStorage.getTenPopular(count);
+        Set<Film> filmList = new HashSet<>();
+        for (Integer id : listFilmID) {
+            filmList.add(filmStorage.findOne(id));
+        }
         log.info("Return Top films");
-        return topTen;
+        return filmList;
     }
 }

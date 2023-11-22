@@ -50,19 +50,19 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
-    public void removeFriends(@PathVariable int id, @PathVariable int friendId) throws NotFoundException, FriendAlreasdyAddedExeption {
-        log.info("Request femove from friend");
+    public void removeFromFriends(@PathVariable int id, @PathVariable int friendId) throws NotFoundException, FriendAlreasdyAddedExeption {
+        log.info("Request remove from friend");
         userService.removeFromFriends(userService.findOne(id), userService.findOne(friendId));
     }
 
     @GetMapping("{id}/friends")
-    public List<User> getFriends(@PathVariable int id) throws NotFoundException {
+    public List<User> returnFriends(@PathVariable int id) throws NotFoundException {
         log.info("Request get friend");
         return userService.returnFriends(userService.getFriendsId(id));
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
-    public List<User> getCommonFriends(@PathVariable int id, @PathVariable int otherId) throws NotFoundException {
+    public List<User> showCommonFriends(@PathVariable int id, @PathVariable int otherId) throws NotFoundException {
         log.info("Request get common friend");
         return userService.showCommonFriends(userService.findOne(id), userService.findOne(otherId));
     }

@@ -15,10 +15,12 @@ public class MpaService {
     private final MpaDbStorage storage;
 
     public List<Mpa> getAll() {
+        log.info("Return all rating");
         return storage.getAll();
     }
 
     public Mpa getById(int id) {
+        log.info("Return rating by id: {}", id);
         return storage.findOne(id);
     }
 }

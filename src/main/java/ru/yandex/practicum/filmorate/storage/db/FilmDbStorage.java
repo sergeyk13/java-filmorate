@@ -30,7 +30,6 @@ public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final MpaDbStorage mpaDbStorage;
     private final GenreDbStorage genreDbStorage;
-    private final LikesDbStorage likesDbStorage;
     private final FilmGenreDbStorage filmGenreDbStorage;
 
     private static Film createFilm(ResultSet rs, int rowNum) throws SQLException {
@@ -166,7 +165,6 @@ public class FilmDbStorage implements FilmStorage {
         }
         genreList.addAll(genreSet);
         film.setGenre(genreList);
-        film.setLikes(likesDbStorage.getLikes(film.getId()));
         film.setMpa(mpaDbStorage.findOne(film.getMpa().getId()));
         return film;
     }

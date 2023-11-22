@@ -34,7 +34,7 @@ public class MpaDbStorage implements MpaStorage {
         if (rowSet.next()) {
             return new Mpa(rowSet.getInt("id"), rowSet.getString("NAME"));
         } else {
-            throw new NotFoundException();
+            throw new NotFoundException("Rating id: " + id);
         }
     }
 
@@ -48,7 +48,7 @@ public class MpaDbStorage implements MpaStorage {
             list.add(new Mpa(rowSet.getInt("id"), rowSet.getString("name")));
         }
         if (list.isEmpty()) {
-            throw new NotFoundException();
+            throw new NotFoundException("Ratings not found in table MPA");
         } else {
             return list;
         }

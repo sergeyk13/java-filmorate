@@ -22,13 +22,13 @@ public class RatingController {
     @GetMapping
     public List<Mpa> getAll() {
         final List<Mpa> mpas = service.getAll();
-        log.info("получение всех рейтингов");
+        log.info("Request all rating");
         return mpas;
     }
 
     @GetMapping("/{id}")
     public Mpa getById(@PathVariable int id) {
-        log.info("получение рейтинга по id: {}", id);
+        log.info("Request rating id: {}", id);
         return service.getById(id);
     }
 }
