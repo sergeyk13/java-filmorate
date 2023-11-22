@@ -39,32 +39,21 @@ public class UserService {
     }
 
     private void addFriend(User user, int friendId) {
-        if (user.getFriendsId() != null) {
-            Set<Integer> friends = user.getFriendsId();
+            Set<Integer> friends = friendshipStorage.getFriendsID(user.getId());
             if (friends.contains(friendId)) {
                 log.error("Friend is already added");
                 throw new FriendAlreasdyAddedExeption("Friend is already added");
             } else {
                 friends.add(friendId);
             }
-        } else {
-            Set<Integer> newList = new HashSet<>();
-            newList.add(friendId);
-            user.setFriendsId(newList);
-            log.info("User: {} add friend: {}", user.getId(), friendId);
-        }
     }
 
     public void removeFromFriends(User user, User secondUser) throws FriendAlreasdyAddedExeption {
-        Set<Integer> friends = user.getFriendsId();
-        Set<Integer> secondFriends = secondUser.getFriendsId();
+        Set<Integer> friends = friendshipStorage.getFriendsID(user.getId());
+        Set<Integer> secondFriends = friendshipStorage.getFriendsID(secondUser.getId());
         if (!(friends.contains(secondUser.getId()) || secondFriends.contains(user.getId()))) {
             throw new FriendAlreasdyAddedExeption("Friend is already added");
         } else {
-            friends.remove(secondUser.getId());
-            user.setFriendsId(friends);
-            secondFriends.remove(user.getId());
-            secondUser.setFriendsId(secondFriends);
             friendshipStorage.removeFriend(user.getId(), secondUser.getId());
             log.info("user: {} and user: {} friendship over", user.getId(), secondUser.getId());
         }
@@ -73,11 +62,11 @@ public class UserService {
     public List<User> showCommonFriends(User user, User secondUser) throws NotFoundException {
         List<User> commonFriends = new ArrayList<>();
         Set<Integer> commonSet = new HashSet<>();
-        Set<Integer> commonFriendsFirstUser = user.getFriendsId();
-        Set<Integer> commonFriendsSecondUser = secondUser.getFriendsId();
-        if (commonFriendsFirstUser == null) {
+        Set<Integer> commonFriendsFirstUser = friendshipStorage.getFriendsID(user.getId());
+        Set<Integer> commonFriendsSecondUser = friendshipStorage.getFriendsID(secondUser.getId());
+        if (commonFriendsFirstUser.isEmpty()) {
             return commonFriends;
-        } else if (commonFriendsSecondUser == null) {
+        } else if (commonFriendsSecondUser.isEmpty()) {
             return commonFriends;
         } else {
             commonFriendsFirstUser.forEach(id -> {

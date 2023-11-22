@@ -66,8 +66,6 @@ public class UserDbStorage implements UserStorage {
             throw new NotFoundException("user witch id: " + id + " not find");
         } else {
             User user = users.get(0);
-            user.setFriendsId(getFriendsId(user.getId()));
-            user.setFriendship(getFriendship(user.getId()));
             return user;
         }
     }
@@ -89,8 +87,6 @@ public class UserDbStorage implements UserStorage {
         }, keyHolder);
 
         user.setId(keyHolder.getKey().intValue());
-        user.setFriendsId(getFriendsId(user.getId()));
-        user.setFriendship(getFriendship(user.getId()));
         return user;
     }
 

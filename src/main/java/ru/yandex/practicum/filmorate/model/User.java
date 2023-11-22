@@ -28,13 +28,8 @@ public class User {
     private LocalDate birthday;
     private int id;
     private String name;
-    @Getter
-    private Set<Integer> friendsId;
-    private HashMap<Integer, Boolean> friendship;
 
     public User() {
-        this.friendsId = new HashSet<>();
-        this.friendship = new HashMap<>();
     }
 
     public User(String login, String email, LocalDate birthday, String name) {
@@ -42,15 +37,5 @@ public class User {
         this.email = email;
         this.birthday = birthday;
         this.name = name;
-        this.friendsId = new HashSet<>();
-        this.friendship = new HashMap<>();
-    }
-
-    public void setFriendsId(Set<Integer> friendsId) {
-        this.friendsId = friendsId;
-    }
-
-    public void setFriendship(HashMap<Integer, Boolean> friendship) {
-        this.friendship = friendship;
     }
 }
