@@ -39,13 +39,13 @@ public class UserService {
     }
 
     private void addFriend(User user, int friendId) {
-            Set<Integer> friends = friendshipStorage.getFriendsID(user.getId());
-            if (friends.contains(friendId)) {
-                log.error("Friend is already added");
-                throw new FriendAlreasdyAddedExeption("Friend is already added");
-            } else {
-                friends.add(friendId);
-            }
+        Set<Integer> friends = friendshipStorage.getFriendsID(user.getId());
+        if (friends.contains(friendId)) {
+            log.error("Friend is already added");
+            throw new FriendAlreasdyAddedExeption("Friend is already added");
+        } else {
+            friends.add(friendId);
+        }
     }
 
     public void removeFromFriends(User user, User secondUser) throws FriendAlreasdyAddedExeption {

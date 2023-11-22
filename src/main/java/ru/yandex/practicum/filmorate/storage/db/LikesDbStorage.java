@@ -47,12 +47,12 @@ public class LikesDbStorage implements LikesStorage {
         String sqlQuery = "SELECT FILM_ID, COUNT(FILM_ID) as likeCount FROM LIKES " +
                 "GROUP BY FILM_ID ORDER BY likeCount DESC LIMIT ?";
         List<Integer> listId = jdbcTemplate.query(sqlQuery,
-                (resultSet, rowNum) -> resultSet.getInt("FILM_ID"),count);
+                (resultSet, rowNum) -> resultSet.getInt("FILM_ID"), count);
         int n = count - listId.size();
         if (n != 0) {
             sqlQuery = "SELECT id FROM FILMS ORDER BY title LIMIT ?";
-         listId.addAll(jdbcTemplate.query(sqlQuery,
-                 (resultSet, rowNum) -> resultSet.getInt("ID"),n));
+            listId.addAll(jdbcTemplate.query(sqlQuery,
+                    (resultSet, rowNum) -> resultSet.getInt("ID"), n));
         }
         return listId;
     }
